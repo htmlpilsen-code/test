@@ -1,3 +1,2 @@
-<?php
-echo 125;
+<?php echo 128;
 ```
