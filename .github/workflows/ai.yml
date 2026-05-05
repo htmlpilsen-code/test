@@ -23,22 +23,20 @@ jobs:
             -H "Authorization: Bearer $HF_TOKEN" \
             -H "Content-Type: application/json" \
             -d "{
-              \"model\": \"google/gemma-7b-it\",
               \"messages\": [
                 {
                   \"role\": \"user\",
                   \"content\": \"Vytvoř čistý PHP soubor (jen kód bez vysvětlování). Zadání: $prompt\"
                 }
               ],
+              \"model\": \"deepseek-ai/DeepSeek-V4-Pro:novita\",
               \"stream\": false
             }")
 
           echo "$response" > response.json
 
       - name: Debug response
-        run: |
-          echo "===== RAW RESPONSE ====="
-          cat response.json
+        run: cat response.json
 
       - name: Parse AI output safely
         run: |
@@ -46,24 +44,15 @@ jobs:
           import json, os
 
           with open("response.json") as f:
-              raw = f.read()
+              data = json.load(f)
 
-          print("RAW:", raw)
-
-          try:
-              data = json.loads(raw)
-          except Exception:
-              print("❌ Invalid JSON response")
-              exit(1)
-
-          # Router API = OpenAI-like format
           try:
               text = data["choices"][0]["message"]["content"]
           except Exception:
-              print("❌ Unexpected format:", data)
+              print("❌ Unexpected response format:", data)
               exit(1)
 
-          # extract PHP only if needed
+          # extract PHP only if model adds extra text
           if "<?php" in text:
               text = text[text.find("<?php"):]
 
