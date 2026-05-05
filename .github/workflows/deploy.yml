@@ -17,7 +17,9 @@ jobs:
 
       - name: Upload via FTP
         run: |
-          lftp -c "
-          open -u $FTP_USER,$FTP_PASS $FTP_HOST;
+          lftp -d -c "
+          set ftp:ssl-allow no;
+          open ftp://$FTP_USER:$FTP_PASS@$FTP_HOST;
+          ls;
           mirror -R ./web /htdocs;
           "
