@@ -4,6 +4,9 @@ on:
   repository_dispatch:
     types: [generate]
 
+permissions:
+  contents: write
+
 jobs:
   ai:
     runs-on: ubuntu-latest
@@ -46,13 +49,8 @@ jobs:
           with open("response.json") as f:
               data = json.load(f)
 
-          try:
-              text = data["choices"][0]["message"]["content"]
-          except Exception:
-              print("❌ Unexpected response format:", data)
-              exit(1)
+          text = data["choices"][0]["message"]["content"]
 
-          # extract PHP only if model adds extra text
           if "<?php" in text:
               text = text[text.find("<?php"):]
 
@@ -60,8 +58,6 @@ jobs:
 
           with open("web/index.php", "w") as f:
               f.write(text)
-
-          print("✅ PHP generated")
           EOF
 
       - name: Commit changes
