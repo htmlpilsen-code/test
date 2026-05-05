@@ -19,44 +19,60 @@ jobs:
         run: |
           prompt="${{ github.event.client_payload.text }}"
 
-          response=$(curl -s https://api-inference.huggingface.co/models/mistralai/Mistral-7B-Instruct \
+          response=$(curl -s -w "\n%{http_code}" \
+            https://api-inference.huggingface.co/models/mistralai/Mistral-7B-Instruct \
             -H "Authorization: Bearer $HF_TOKEN" \
             -H "Content-Type: application/json" \
             -d "{
-              \"inputs\": \"Vytvoř čistý PHP soubor (jen kód bez vysvětlování). Zadání: $prompt\"
+              \"inputs\": \"Vytvoř čistý PHP soubor (jen kód, bez vysvětlování). Zadání: $prompt\"
             }")
 
-          echo "$response" > response.json
+          echo "$response" > response.txt
 
-      - name: Debug response
-        run: cat response.json
+      - name: Debug raw response
+        run: |
+          echo "===== RAW RESPONSE ====="
+          cat response.txt
 
-      - name: Extract generated code
+      - name: Parse and generate file safely
         run: |
           python3 - << 'EOF'
-          import json
+          import os
 
-          with open("response.json") as f:
-              data = json.load(f)
+          with open("response.txt") as f:
+              raw = f.read()
 
-          # Hugging Face vrací jiný formát než OpenAI
-          if isinstance(data, list):
-              text = data[0].get("generated_text", "")
-          else:
-              print("❌ Unexpected response:", data)
+          print("RAW:")
+          print(raw)
+
+          # split JSON + HTTP code
+          parts = raw.rsplit("\n", 1)
+          json_part = parts[0] if parts else raw
+
+          try:
+              import json
+              data = json.loads(json_part)
+          except Exception as e:
+              print("❌ Invalid JSON from Hugging Face")
               exit(1)
 
-          # někdy model vrací prompt + odpověď → ořízneme
-          if "```" in text:
-              text = text.split("```")[-1]
+          # HuggingFace returns list
+          if isinstance(data, list) and "generated_text" in data[0]:
+              text = data[0]["generated_text"]
+          else:
+              print("❌ Unexpected format:", data)
+              exit(1)
 
-          import os
+          # extract only PHP if model adds extra text
+          if "<?php" in text:
+              text = text[text.find("<?php"):]
+
           os.makedirs("web", exist_ok=True)
 
           with open("web/index.php", "w") as f:
               f.write(text)
 
-          print("✅ PHP generated")
+          print("✅ PHP file generated")
           EOF
 
       - name: Commit changes
