@@ -20,7 +20,7 @@ jobs:
           prompt="${{ github.event.client_payload.text }}"
 
           response=$(curl -s -w "\n%{http_code}" \
-            https://api-inference.huggingface.co/models/mistralai/Mistral-7B-Instruct \
+            https://api-inference.huggingface.co/models/google/flan-t5-base \
             -H "Authorization: Bearer $HF_TOKEN" \
             -H "Content-Type: application/json" \
             -d "{
