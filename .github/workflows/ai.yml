@@ -15,55 +15,52 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v4
 
-      - name: Call Hugging Face API
+      - name: Call Hugging Face API (pipeline)
         run: |
           prompt="${{ github.event.client_payload.text }}"
 
-          response=$(curl -s -w "\n%{http_code}" \
-            https://api-inference.huggingface.co/models/distilbert-base-uncased \
+          response=$(curl -s https://api-inference.huggingface.co/pipeline/text2text-generation/google/flan-t5-base \
             -H "Authorization: Bearer $HF_TOKEN" \
             -H "Content-Type: application/json" \
             -d "{
-              \"inputs\": \"Vytvoř čistý PHP soubor (jen kód, bez vysvětlování). Zadání: $prompt\"
+              \"inputs\": \"Vytvoř jednoduchý PHP soubor (jen kód, bez vysvětlování). Zadání: $prompt\"
             }")
 
           echo "$response" > response.txt
 
-      - name: Debug raw response
+      - name: Debug response
         run: |
           echo "===== RAW RESPONSE ====="
           cat response.txt
 
-      - name: Parse and generate file safely
+      - name: Parse AI output safely
         run: |
           python3 - << 'EOF'
+          import json
           import os
 
           with open("response.txt") as f:
               raw = f.read()
 
-          print("RAW:")
+          print("RAW RESPONSE:")
           print(raw)
 
-          # split JSON + HTTP code
-          parts = raw.rsplit("\n", 1)
-          json_part = parts[0] if parts else raw
-
           try:
-              import json
-              data = json.loads(json_part)
+              data = json.loads(raw)
           except Exception as e:
-              print("❌ Invalid JSON from Hugging Face")
+              print("❌ Not valid JSON from Hugging Face")
               exit(1)
 
-          # HuggingFace returns list
-          if isinstance(data, list) and "generated_text" in data[0]:
-              text = data[0]["generated_text"]
+          # HF pipeline sometimes returns list or dict
+          if isinstance(data, list):
+              text = data[0].get("generated_text", "")
+          elif isinstance(data, dict) and "generated_text" in data:
+              text = data["generated_text"]
           else:
               print("❌ Unexpected format:", data)
               exit(1)
 
-          # extract only PHP if model adds extra text
+          # extract PHP if model adds extra text
           if "<?php" in text:
               text = text[text.find("<?php"):]
 
@@ -72,7 +69,7 @@ jobs:
           with open("web/index.php", "w") as f:
               f.write(text)
 
-          print("✅ PHP file generated")
+          print("✅ PHP generated")
           EOF
 
       - name: Commit changes
