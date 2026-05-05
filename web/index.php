@@ -1,3 +1,3 @@
 <?php
-echo "xxxggg";
+echo 125;
 ```
