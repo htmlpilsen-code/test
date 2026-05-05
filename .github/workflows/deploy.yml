@@ -15,6 +15,14 @@ jobs:
       - name: Install lftp
         run: sudo apt-get update && sudo apt-get install -y lftp
 
+      - name: debug
+        run: env | grep FTP
+
+      - name: debug secrets
+        run: |
+          echo "HOST length: ${#FTP_HOST}"
+          echo "USER length: ${#FTP_USER}"
+
       - name: Debug FTP
         run: |
           echo "HOST=$FTP_HOST"
