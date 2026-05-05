@@ -1,3 +1,6 @@
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
 name: Deploy to FTP
 
 on:
@@ -19,5 +22,5 @@ jobs:
         run: |
           lftp -c "
           open -u $FTP_USER,$FTP_PASS $FTP_HOST;
-          mirror -R ./ /htdocs;
+          mirror -R ./web /htdocs;
           "
