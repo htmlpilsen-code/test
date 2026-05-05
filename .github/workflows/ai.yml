@@ -1,4 +1,4 @@
-name: AI generate code (Hugging Face)
+name: AI generate code (Hugging Face Router)
 
 on:
   repository_dispatch:
@@ -15,52 +15,55 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v4
 
-      - name: Call Hugging Face API (pipeline)
+      - name: Call Hugging Face Router API
         run: |
           prompt="${{ github.event.client_payload.text }}"
 
-          response=$(curl -s https://api-inference.huggingface.co/pipeline/text2text-generation/google/flan-t5-base \
+          response=$(curl -s https://router.huggingface.co/v1/chat/completions \
             -H "Authorization: Bearer $HF_TOKEN" \
             -H "Content-Type: application/json" \
             -d "{
-              \"inputs\": \"Vytvoř jednoduchý PHP soubor (jen kód, bez vysvětlování). Zadání: $prompt\"
+              \"model\": \"mistralai/Mistral-7B-Instruct-v0.2\",
+              \"messages\": [
+                {
+                  \"role\": \"user\",
+                  \"content\": \"Vytvoř čistý PHP soubor (jen kód bez vysvětlování). Zadání: $prompt\"
+                }
+              ],
+              \"stream\": false
             }")
 
-          echo "$response" > response.txt
+          echo "$response" > response.json
 
       - name: Debug response
         run: |
           echo "===== RAW RESPONSE ====="
-          cat response.txt
+          cat response.json
 
       - name: Parse AI output safely
         run: |
           python3 - << 'EOF'
-          import json
-          import os
+          import json, os
 
-          with open("response.txt") as f:
+          with open("response.json") as f:
               raw = f.read()
 
-          print("RAW RESPONSE:")
-          print(raw)
+          print("RAW:", raw)
 
           try:
               data = json.loads(raw)
-          except Exception as e:
-              print("❌ Not valid JSON from Hugging Face")
+          except Exception:
+              print("❌ Invalid JSON response")
               exit(1)
 
-          # HF pipeline sometimes returns list or dict
-          if isinstance(data, list):
-              text = data[0].get("generated_text", "")
-          elif isinstance(data, dict) and "generated_text" in data:
-              text = data["generated_text"]
-          else:
+          # Router API = OpenAI-like format
+          try:
+              text = data["choices"][0]["message"]["content"]
+          except Exception:
               print("❌ Unexpected format:", data)
               exit(1)
 
-          # extract PHP if model adds extra text
+          # extract PHP only if needed
           if "<?php" in text:
               text = text[text.find("<?php"):]
 
@@ -78,5 +81,5 @@ jobs:
           git config user.email "ai-bot@users.noreply.github.com"
 
           git add web/index.php
-          git commit -m "AI generated via Hugging Face" || echo "no changes"
+          git commit -m "AI generated via HF Router" || echo "no changes"
           git push
