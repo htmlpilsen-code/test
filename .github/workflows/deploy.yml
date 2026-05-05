@@ -1,4 +1,4 @@
-name: Deploy to FTP
+name: Deploy
 
 on:
   push:
@@ -8,31 +8,21 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
 
+    env:
+      FTP_HOST: ${{ secrets.FTP_HOST }}
+      FTP_USER: ${{ secrets.FTP_USER }}
+      FTP_PASS: ${{ secrets.FTP_PASS }}
+
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
       - name: Install lftp
         run: sudo apt-get update && sudo apt-get install -y lftp
 
-      - name: debug
-        run: env | grep FTP
-
-      - name: debug secrets
+      - name: Deploy via FTP
         run: |
-          echo "HOST length: ${#FTP_HOST}"
-          echo "USER length: ${#FTP_USER}"
-
-      - name: Debug FTP
-        run: |
-          echo "HOST=$FTP_HOST"
-          nc -vz $FTP_HOST 21
-
-      - name: Upload via FTP
-        run: |
-          lftp -d -c "
+          lftp -c "
           set ftp:ssl-allow no;
           open ftp://$FTP_USER:$FTP_PASS@$FTP_HOST;
-          ls;
           mirror -R ./web /htdocs;
           "
