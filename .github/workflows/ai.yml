@@ -23,7 +23,7 @@ jobs:
             -H "Authorization: Bearer $HF_TOKEN" \
             -H "Content-Type: application/json" \
             -d "{
-              \"model\": \"mistralai/Mistral-7B-Instruct-v0.2\",
+              \"model\": \"google/gemma-7b-it\",
               \"messages\": [
                 {
                   \"role\": \"user\",
