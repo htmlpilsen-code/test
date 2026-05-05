@@ -12,9 +12,10 @@ jobs:
       OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout repo
+        uses: actions/checkout@v4
 
-      - name: Generate PHP code with AI
+      - name: Call OpenAI API
         run: |
           prompt="${{ github.event.client_payload.text }}"
 
@@ -26,23 +27,39 @@ jobs:
               \"messages\": [
                 {
                   \"role\": \"user\",
-                  \"content\": \"Vytvoř jednoduchý PHP soubor. Zadání: $prompt. Vrať pouze čistý PHP kód.\"
+                  \"content\": \"Vytvoř čistý PHP soubor (jen kód, bez vysvětlování). Zadání: $prompt\"
                 }
               ]
             }")
 
           echo "$response" > response.json
 
-      - name: Extract code to file
+      - name: Debug API response
+        run: cat response.json
+
+      - name: Generate PHP file safely
         run: |
           python3 - << 'EOF'
           import json
 
-          data = json.load(open("response.json"))
+          with open("response.json") as f:
+              data = json.load(f)
+
+          if "choices" not in data:
+              print("❌ OpenAI API error:")
+              print(data)
+              exit(1)
+
           code = data["choices"][0]["message"]["content"]
+
+          # ensure folder exists
+          import os
+          os.makedirs("web", exist_ok=True)
 
           with open("web/index.php", "w") as f:
               f.write(code)
+
+          print("✅ file generated")
           EOF
 
       - name: Commit changes
