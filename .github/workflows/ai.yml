@@ -6,6 +6,7 @@ on:
 
 permissions:
   contents: write
+  actions: write
 
 jobs:
   ai:
@@ -73,6 +74,6 @@ jobs:
       - name: Trigger deploy workflow
         run: |
           curl -X POST https://api.github.com/repos/${{ github.repository }}/actions/workflows/deploy.yml/dispatches \
-            -H "Authorization: Bearer ${GITHUB_TOKEN}" \
+            -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
             -H "Accept: application/vnd.github+json" \
             -d '{"ref":"main"}'
