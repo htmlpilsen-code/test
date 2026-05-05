@@ -1,1 +1,1 @@
-<?php echo 'xxx';
+<?php echo "AHOJ";
