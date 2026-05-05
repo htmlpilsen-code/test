@@ -15,6 +15,11 @@ jobs:
       - name: Install lftp
         run: sudo apt-get update && sudo apt-get install -y lftp
 
+      - name: Debug FTP
+        run: |
+          echo "HOST=$FTP_HOST"
+          nc -vz $FTP_HOST 21
+
       - name: Upload via FTP
         run: |
           lftp -d -c "
