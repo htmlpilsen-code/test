@@ -37,7 +37,7 @@ jobs:
                   \"content\": \"Vytvoř čistý PHP soubor (jen kód bez vysvětlování). Zadání: $prompt\"
                 }
               ],
-              \"model\": \"deepseek-ai/DeepSeek-V4-Pro:novita\",
+              \"model\": \"google/gemma-7b-it\",
               \"stream\": false
             }")
 
