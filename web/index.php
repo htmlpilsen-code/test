@@ -1,2 +1,3 @@
 <?php
-echo "ahojky";
+echo "Hello, world!";
+```
