@@ -49,20 +49,30 @@ jobs:
       - name: Parse AI output safely
         run: |
           python3 - << 'EOF'
-          import json, os
+          import json, os, re
 
           with open("response.json") as f:
-              data = json.load(f)
+            data = json.load(f)
 
           text = data["choices"][0]["message"]["content"]
 
+          # odstranění markdown ``` bloků (začátek i konec)
+          text = re.sub(r"^```[a-zA-Z]*\n", "", text)   # ```php
+          text = re.sub(r"\n```$", "", text)            # konec ```
+
+          # fallback: kdyby tam zůstaly někde uvnitř
+          text = text.replace("```", "")
+
+          # ořízni jen PHP část pokud existuje
           if "<?php" in text:
-              text = text[text.find("<?php"):]
+            text = text[text.find("<?php"):]
 
           os.makedirs("web", exist_ok=True)
 
           with open("web/index.php", "w") as f:
-              f.write(text)
+            f.write(text.strip())
+
+          print("✅ cleaned")
           EOF
 
       - name: Commit changes
