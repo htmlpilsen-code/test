@@ -37,7 +37,7 @@ jobs:
                   \"content\": \"Vytvoř čistý PHP soubor (jen kód bez vysvětlování). Zadání: $prompt\"
                 }
               ],
-              \"model\": \"google/gemma-7b-it\",
+              \"model\": \"HuggingFaceH4/zephyr-7b-beta\",
               \"stream\": false
             }")
 
