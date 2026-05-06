@@ -1,2 +1,1 @@
-<?php
-echo "visegracias a Katka, když se Gracias a Katka, visegracia s a Katka, když se grácias a Katka";
+<?php echo 'hezký be El Nombre be Theory, hezký be El Nombre be theroy, hezký be El Nombre be theowa, hezký be El Nombre be thea dehoy, hezký be El Nombre be thea deoi';
