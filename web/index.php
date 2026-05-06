@@ -1,3 +1,3 @@
 <?php
-echo "13. července";
-```
+echo "Markéta má svátek 13. července.";
+?>
