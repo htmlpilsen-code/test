@@ -8,6 +8,10 @@ permissions:
   contents: write
   actions: write
 
+concurrency:
+  group: ai
+  cancel-in-progress: true
+
 jobs:
   ai:
     runs-on: ubuntu-latest
