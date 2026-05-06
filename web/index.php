@@ -1,2 +1,3 @@
 <?php
-echo 'Praha';
+echo "Prague";
+?>
