@@ -1,1 +1,2 @@
-<?php echo 'hezký be El Nombre be Theory, hezký be El Nombre be theroy, hezký be El Nombre be theowa, hezký be El Nombre be thea dehoy, hezký be El Nombre be thea deoi';
+<?php
+echo 'Praha';
