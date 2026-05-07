@@ -34,11 +34,12 @@ jobs:
               \"messages\": [
                 {
                   \"role\": \"user\",
-                  \"content\": \"Return ONLY raw PHP code. No markdown.: $prompt\"
+                  \"content\": \"Return ONLY raw PHP code. No explanation. No markdown.: $prompt\"
                 }
               ],
-              \"model\": \"deepseek-ai/DeepSeek-R1:novita\",
+              \"model\": \"deepseek-ai/DeepSeek-V3:novita\",
               \"max_tokens\": 120,
+              \"temperature\": 0.2,
               \"stream\": false
             }")
 
