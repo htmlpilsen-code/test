@@ -1,7 +1,5 @@
 <?php
-$film = array(
-    "nazev" => "Mrazík",
-    "rok_natoceni" => 1964,
-    "misto_natoceni" => "Sovětský svaz (dnešní Rusko a Ukrajina)"
-);
+$film = "Mrazík";
+$rok = 1964;
+echo "Film $film byl natočen v roce $rok.";
 ?>
