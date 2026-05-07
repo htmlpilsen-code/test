@@ -68,6 +68,8 @@ jobs:
           # ořízni jen PHP část pokud existuje
           if "<?php" in text:
             text = text[text.find("<?php"):]
+          else:
+            raise Exception("❌ No PHP code found in AI response")
 
           os.makedirs("web", exist_ok=True)
 
