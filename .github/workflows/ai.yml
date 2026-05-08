@@ -34,7 +34,7 @@ jobs:
               \"messages\": [
                 {
                   \"role\": \"user\",
-                  \"content\": \"Return ONLY raw HTML/PHP code. No explanation. No markdown. Keep code compact. Use minimal inline css.: $prompt\"
+                  \"content\": \"Return ONLY raw PHP code. No explanation. No markdown. Keep code compact. Use minimal inline css.: $prompt\"
                 }
               ],
               \"model\": \"deepseek-ai/DeepSeek-V3:novita\",
