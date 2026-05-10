@@ -1,4 +1,1 @@
-<?php
-$pivovarYear = 1842;
-echo '<span style="font-size:14px;color:#333;">Plzeňský pivovar byl založen v roce ' . $pivovarYear . '.</span>';
-?>
+<?php echo '<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Hezký den</title><style>body{font-family:Arial,sans-serif;text-align:center;margin-top:50px;background:#f5f5f5;color:#333}h1{color:#d35400}</style></head><body><h1>Hezký den!</h1><p>Přeji vám krásný a pohodový den.</p></body></html>'; ?>
