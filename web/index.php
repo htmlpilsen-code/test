@@ -1,1 +1,3 @@
-<?php echo '<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Hezký den</title><style>body{font-family:Arial,sans-serif;text-align:center;margin-top:50px;background:#f5f5f5;color:#333}h1{color:#d35400}</style></head><body><h1>Hezký den!</h1><p>Přeji vám krásný a pohodový den.</p></body></html>'; ?>
+<?php
+echo '<!DOCTYPE html><html><head><title>Narozeniny pro Buchtu</title><style>body{font-family:Arial;text-align:center;background:#ffe6f2;margin:0;padding:20px}h1{color:#ff66b3}img{max-width:300px;border-radius:10px;margin:20px 0}.message{font-size:18px;color:#993366;margin:10px}</style></head><body><h1>Všechno nejlepší Buchtičko!</h1><img src="https://example.com/cat.jpg" alt="Buchta"><div class="message">Milá Buchto, přeji ti mnoho mňamek a pohodových chvilek!</div></body></html>';
+?>
